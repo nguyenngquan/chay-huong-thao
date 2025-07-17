@@ -571,6 +571,11 @@ const Footer = ({ setPage }) => {
 export default function App() {
   const [page, setPage] = useState('home');
 
+  // Set document title
+  useEffect(() => {
+    document.title = 'Nhà Hàng Chay Hương Thảo';
+  }, []);
+
   const renderPage = () => {
     switch (page) {
       case 'home':
