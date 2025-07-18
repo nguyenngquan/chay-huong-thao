@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Clock, ChevronDown, Menu as MenuIcon, X, Utensils, Leaf, Sprout, Heart } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Phone, Mail, Clock, ChevronDown, Menu as MenuIcon, X, Utensils, Leaf, Sprout, Heart, MessageCircle, Send } from 'lucide-react';
 
 // Mock Data (Dữ liệu mẫu)
 const MOCK_DATA = {
@@ -106,7 +106,6 @@ const Header = ({ setPage, activePage }) => {
           </div>
         </div>
       </div>
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white py-4">
           <nav className="flex flex-col items-center space-y-4">
@@ -133,7 +132,6 @@ const Header = ({ setPage, activePage }) => {
 const HomePage = ({ setPage }) => {
   return (
     <div>
-      {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[80vh] bg-cover bg-center" style={{ backgroundImage: "url('https://placehold.co/1920x1080/a3b18a/ffffff?text=Nhà+Hàng+Chay+Hương+Thảo')" }}>
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
@@ -144,8 +142,6 @@ const HomePage = ({ setPage }) => {
           </button>
         </div>
       </section>
-
-      {/* Catering Service Highlight */}
       <section className="py-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -165,8 +161,6 @@ const HomePage = ({ setPage }) => {
           </div>
         </div>
       </section>
-
-      {/* Philosophy Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <SectionTitle>Triết Lý Của Chúng Tôi</SectionTitle>
@@ -261,8 +255,6 @@ const CateringServicePage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle>Dịch Vụ Nấu Cỗ Chay Tận Nơi</SectionTitle>
         <SectionSubtitle>Để mỗi sự kiện của bạn trở nên đặc biệt, ý nghĩa và trọn vẹn hơn với những mâm cỗ chay thịnh soạn, thanh tịnh và ngon miệng từ Hương Thảo.</SectionSubtitle>
-
-        {/* Service Intro */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
           <img src="https://placehold.co/800x600/a3b18a/344e41?text=Tiệc+Chay+Thịnh+Soạn" alt="Tiệc chay" className="rounded-lg shadow-xl" />
           <div>
@@ -278,8 +270,6 @@ const CateringServicePage = () => {
             </ul>
           </div>
         </div>
-
-        {/* Catering Menus */}
         <div className="mb-20 bg-stone-50 py-16 rounded-lg">
           <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">Thực Đơn Cỗ Chay Tham Khảo</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-8">
@@ -298,8 +288,6 @@ const CateringServicePage = () => {
           </div>
           <p className="text-center mt-8 text-gray-600">Thực đơn có thể tùy chỉnh theo yêu cầu và ngân sách của quý khách.</p>
         </div>
-
-        {/* Process */}
         <div className="mb-20">
           <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Quy Trình Đặt Cỗ Đơn Giản</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -309,8 +297,6 @@ const CateringServicePage = () => {
             <Step number="4" title="Thực Hiện & Thanh Toán" description="Hương Thảo sẽ đến tận nơi chuẩn bị, phục vụ và dọn dẹp. Quý khách nghiệm thu và thanh toán." />
           </div>
         </div>
-
-        {/* Advantages */}
         <div>
           <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Vì Sao Chọn Hương Thảo?</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
@@ -390,7 +376,7 @@ const GalleryPage = () => {
 };
 
 const BookingPage = () => {
-  const [bookingType, setBookingType] = useState('table'); // 'table' or 'catering'
+  const [bookingType, setBookingType] = useState('table');
 
   return (
     <div className="py-20 bg-stone-50">
@@ -568,10 +554,116 @@ const Footer = ({ setPage }) => {
   );
 };
 
+// Chatbot Component
+const Chatbot = ({ setPage }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+    const chatboxRef = useRef(null);
+
+    const knowledgeBase = {
+        'chào': 'Chào bạn! Tôi là trợ lý ảo của nhà hàng chay Hương Thảo. Tôi có thể giúp gì cho bạn?',
+        'thực đơn': 'Bạn có thể xem thực đơn đầy đủ của chúng tôi tại trang Thực Đơn. Một số món đặc sắc là Lẩu Nấm Dưỡng Sinh, Đậu Hũ Sốt Nấm Tứ Xuyên. Bạn có muốn chuyển đến trang thực đơn không?',
+        'đặt bàn': 'Để đặt bàn, bạn vui lòng truy cập trang Đặt Bàn / Đặt Cỗ hoặc gọi hotline 0987.654.321. Bạn có muốn chuyển đến trang đặt bàn không?',
+        'nấu cỗ': 'Hương Thảo có dịch vụ nấu cỗ chay tận nơi cho các dịp lễ, tiệc. Bạn có thể xem thông tin chi tiết và các set menu tại trang Dịch Vụ Nấu Cỗ. Bạn có muốn xem ngay không?',
+        'địa chỉ': 'Nhà hàng Hương Thảo ở tại địa chỉ: Số 123, Đường Thanh Niên, Phường Trúc Bạch, Quận Ba Đình, Hà Nội.',
+        'giờ mở cửa': 'Nhà hàng mở cửa từ 10:00 sáng đến 22:00 tối tất cả các ngày trong tuần ạ.',
+        'liên hệ': 'Bạn có thể liên hệ với chúng tôi qua hotline 0987.654.321 hoặc email lienhe@huongthaochay.vn.',
+        'cảm ơn': 'Rất vui được hỗ trợ bạn! Chúc bạn một ngày an lành!',
+    };
+
+    const addMessage = (text, sender) => {
+        setMessages(prev => [...prev, { text, sender }]);
+    };
+    
+    useEffect(() => {
+        if (isOpen) {
+            addMessage('Chào bạn! Tôi là trợ lý ảo của nhà hàng chay Hương Thảo. Bạn cần hỗ trợ thông tin gì ạ? (VD: thực đơn, đặt bàn, nấu cỗ, địa chỉ)', 'bot');
+        } else {
+            setMessages([]);
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (chatboxRef.current) {
+            chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        if (!inputValue.trim()) return;
+
+        addMessage(inputValue, 'user');
+        const userInput = inputValue.toLowerCase();
+        let botResponse = 'Xin lỗi, tôi chưa hiểu câu hỏi của bạn. Để được hỗ trợ tốt nhất, bạn vui lòng gọi hotline 0987.654.321 nhé.';
+        
+        for (const key in knowledgeBase) {
+            if (userInput.includes(key)) {
+                botResponse = knowledgeBase[key];
+                break;
+            }
+        }
+        
+        setTimeout(() => {
+            addMessage(botResponse, 'bot');
+            if (userInput.includes('thực đơn')) {
+                addMessage(<button onClick={() => { setPage('menu'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Thực Đơn</button>, 'bot');
+            }
+            if (userInput.includes('đặt bàn')) {
+                 addMessage(<button onClick={() => { setPage('booking'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Đặt Bàn</button>, 'bot');
+            }
+            if (userInput.includes('nấu cỗ')) {
+                 addMessage(<button onClick={() => { setPage('catering'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Dịch Vụ Cỗ</button>, 'bot');
+            }
+        }, 1000);
+
+        setInputValue('');
+    };
+
+    return (
+        <div className="fixed bottom-5 right-5 z-50">
+            <div className={`chatbot-window ${isOpen ? 'open' : ''}`}>
+                <div className="bg-green-800 text-white p-4 flex justify-between items-center rounded-t-lg">
+                    <h3 className="font-bold">Hỗ trợ trực tuyến</h3>
+                    <button onClick={() => setIsOpen(false)}><X size={20}/></button>
+                </div>
+                <div ref={chatboxRef} className="h-80 bg-white p-4 overflow-y-auto space-y-4">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200 flex rounded-b-lg">
+                    <input 
+                        type="text" 
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Nhập câu hỏi của bạn..." 
+                        className="w-full px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <button type="submit" className="bg-green-700 text-white px-4 rounded-r-md hover:bg-green-800">
+                        <Send size={20}/>
+                    </button>
+                </form>
+            </div>
+            <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="bg-green-700 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center hover:bg-green-800 transition-transform hover:scale-110"
+            >
+                {isOpen ? <X size={32}/> : <MessageCircle size={32} />}
+            </button>
+        </div>
+    );
+};
+
+
 export default function App() {
   const [page, setPage] = useState('home');
 
-  // Set document title
   useEffect(() => {
     document.title = 'Nhà Hàng Chay Hương Thảo';
   }, []);
@@ -614,6 +706,26 @@ export default function App() {
           @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
           @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+          
+          .chatbot-window {
+            position: absolute;
+            bottom: 80px; /* Position above the button */
+            right: 0;
+            width: 350px;
+            max-width: 90vw;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease-out;
+            transform-origin: bottom right;
+          }
+          .chatbot-window.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            visibility: visible;
+          }
         `}
       </style>
       <Header setPage={setPage} activePage={page} />
@@ -621,6 +733,7 @@ export default function App() {
         {renderPage()}
       </main>
       <Footer setPage={setPage} />
+      <Chatbot setPage={setPage} />
     </div>
   );
 }
