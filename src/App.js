@@ -561,26 +561,68 @@ const Chatbot = ({ setPage }) => {
     const [inputValue, setInputValue] = useState('');
     const chatboxRef = useRef(null);
 
-    const knowledgeBase = {
-        'chào': 'Chào bạn! Tôi là trợ lý ảo của nhà hàng chay Hương Thảo. Tôi có thể giúp gì cho bạn?',
-        'thực đơn': 'Bạn có thể xem thực đơn đầy đủ của chúng tôi tại trang Thực Đơn. Một số món đặc sắc là Lẩu Nấm Dưỡng Sinh, Đậu Hũ Sốt Nấm Tứ Xuyên. Bạn có muốn chuyển đến trang thực đơn không?',
-        'đặt bàn': 'Để đặt bàn, bạn vui lòng truy cập trang Đặt Bàn / Đặt Cỗ hoặc gọi hotline 0987.654.321. Bạn có muốn chuyển đến trang đặt bàn không?',
-        'nấu cỗ': 'Hương Thảo có dịch vụ nấu cỗ chay tận nơi cho các dịp lễ, tiệc. Bạn có thể xem thông tin chi tiết và các set menu tại trang Dịch Vụ Nấu Cỗ. Bạn có muốn xem ngay không?',
-        'địa chỉ': 'Nhà hàng Hương Thảo ở tại địa chỉ: Số 123, Đường Thanh Niên, Phường Trúc Bạch, Quận Ba Đình, Hà Nội.',
-        'giờ mở cửa': 'Nhà hàng mở cửa từ 10:00 sáng đến 22:00 tối tất cả các ngày trong tuần ạ.',
-        'liên hệ': 'Bạn có thể liên hệ với chúng tôi qua hotline 0987.654.321 hoặc email lienhe@huongthaochay.vn.',
-        'cảm ơn': 'Rất vui được hỗ trợ bạn! Chúc bạn một ngày an lành!',
-        'ai xinh nhất': 'Tất nhiên là công chúa vợ Vũ Thị Huế'
-    };
+    const getKnowledgeBase = (setPage, setIsOpen) => [
+        {
+            keywords: ['chào', 'hello', 'hi', 'xin chào'],
+            response: 'Chào bạn! Tôi là trợ lý ảo của nhà hàng chay Hương Thảo. Tôi có thể giúp gì cho bạn?'
+        },
+        {
+            keywords: ['thực đơn', 'menu', 'món ăn', 'ăn gì', 'giá', 'bao nhiêu tiền'],
+            response: (
+                <>
+                    <p>Bạn có thể xem thực đơn đầy đủ của chúng tôi tại trang Thực Đơn. Một số món đặc sắc là Lẩu Nấm Dưỡng Sinh, Đậu Hũ Sốt Nấm Tứ Xuyên.</p>
+                    <button onClick={() => { setPage('menu'); setIsOpen(false); }} className="text-blue-500 underline mt-2 inline-block">Chuyển đến trang Thực Đơn</button>
+                </>
+            )
+        },
+        {
+            keywords: ['đặt bàn', 'đặt chỗ'],
+            response: (
+                <>
+                    <p>Để đặt bàn, bạn vui lòng truy cập trang Đặt Bàn / Đặt Cỗ hoặc gọi hotline 0987.654.321.</p>
+                    <button onClick={() => { setPage('booking'); setIsOpen(false); }} className="text-blue-500 underline mt-2 inline-block">Chuyển đến trang Đặt Bàn</button>
+                </>
+            )
+        },
+        {
+            keywords: ['nấu cỗ', 'đặt cỗ', 'tiệc'],
+            response: (
+                 <>
+                    <p>Hương Thảo có dịch vụ nấu cỗ chay tận nơi cho các dịp lễ, tiệc. Bạn có thể xem thông tin chi tiết và các set menu tại trang Dịch Vụ Nấu Cỗ.</p>
+                    <button onClick={() => { setPage('catering'); setIsOpen(false); }} className="text-blue-500 underline mt-2 inline-block">Xem Dịch Vụ Nấu Cỗ</button>
+                </>
+            )
+        },
+        {
+            keywords: ['địa chỉ', 'ở đâu', 'chỗ nào'],
+            response: 'Nhà hàng Hương Thảo ở tại địa chỉ: Số 123, Đường Thanh Niên, Phường Trúc Bạch, Quận Ba Đình, Hà Nội.'
+        },
+        {
+            keywords: ['giờ mở cửa', 'mấy giờ', 'thời gian'],
+            response: 'Nhà hàng mở cửa từ 10:00 sáng đến 22:00 tối tất cả các ngày trong tuần ạ.'
+        },
+        {
+            keywords: ['liên hệ', 'số điện thoại', 'sdt', 'hotline', 'email'],
+            response: 'Bạn có thể liên hệ với chúng tôi qua hotline 0987.654.321 hoặc email lienhe@huongthaochay.vn.'
+        },
+        {
+            keywords: ['cảm ơn', 'thank you', 'thanks'],
+            response: 'Rất vui được hỗ trợ bạn! Chúc bạn một ngày an lành!'
+        },
+        {
+          keywords: ['xinh', 'đẹp', 'dễ thương','cute','vợ'],
+          response: 'Tất nhiên là công chúa vợ Vũ Thị Huế'
+      }
+    ];
 
     const addMessage = (text, sender) => {
         setMessages(prev => [...prev, { text, sender }]);
     };
     
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && messages.length === 0) {
             addMessage('Chào bạn! Tôi là trợ lý ảo của nhà hàng chay Hương Thảo. Bạn cần hỗ trợ thông tin gì ạ? (VD: thực đơn, đặt bàn, nấu cỗ, địa chỉ)', 'bot');
-        } else {
+        } else if (!isOpen) {
             setMessages([]);
         }
     }, [isOpen]);
@@ -595,31 +637,34 @@ const Chatbot = ({ setPage }) => {
         e.preventDefault();
         if (!inputValue.trim()) return;
 
-        addMessage(inputValue, 'user');
-        const userInput = inputValue.toLowerCase();
-        let botResponse = 'Xin lỗi, tôi chưa hiểu câu hỏi của bạn. Để được hỗ trợ tốt nhất, bạn vui lòng gọi hotline 0987.654.321 nhé.';
+        const userInput = inputValue;
+        addMessage(userInput, 'user');
+        setInputValue('');
+
+        const normalizedInput = userInput.toLowerCase();
+        let botResponse = null;
         
-        for (const key in knowledgeBase) {
-            if (userInput.includes(key)) {
-                botResponse = knowledgeBase[key];
+        const knowledgeBase = getKnowledgeBase(setPage, setIsOpen);
+
+        for (const item of knowledgeBase) {
+            for (const keyword of item.keywords) {
+                if (normalizedInput.includes(keyword)) {
+                    botResponse = item.response;
+                    break; 
+                }
+            }
+            if (botResponse) {
                 break;
             }
         }
         
         setTimeout(() => {
-            addMessage(botResponse, 'bot');
-            if (userInput.includes('thực đơn')) {
-                addMessage(<button onClick={() => { setPage('menu'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Thực Đơn</button>, 'bot');
-            }
-            if (userInput.includes('đặt bàn')) {
-                 addMessage(<button onClick={() => { setPage('booking'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Đặt Bàn</button>, 'bot');
-            }
-            if (userInput.includes('nấu cỗ')) {
-                 addMessage(<button onClick={() => { setPage('catering'); setIsOpen(false); }} className="text-blue-500 underline">Đến trang Dịch Vụ Cỗ</button>, 'bot');
+            if (botResponse) {
+                addMessage(botResponse, 'bot');
+            } else {
+                addMessage('Xin lỗi, tôi chưa hiểu câu hỏi của bạn. Để được hỗ trợ tốt nhất, bạn vui lòng gọi hotline 0987.654.321 nhé.', 'bot');
             }
         }, 1000);
-
-        setInputValue('');
     };
 
     return (
