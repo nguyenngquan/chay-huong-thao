@@ -570,6 +570,7 @@ const Chatbot = ({ setPage }) => {
         'giờ mở cửa': 'Nhà hàng mở cửa từ 10:00 sáng đến 22:00 tối tất cả các ngày trong tuần ạ.',
         'liên hệ': 'Bạn có thể liên hệ với chúng tôi qua hotline 0987.654.321 hoặc email lienhe@huongthaochay.vn.',
         'cảm ơn': 'Rất vui được hỗ trợ bạn! Chúc bạn một ngày an lành!',
+        'ai xinh nhất': 'Tất nhiên là công chúa vợ Vũ Thị Huế'
     };
 
     const addMessage = (text, sender) => {
